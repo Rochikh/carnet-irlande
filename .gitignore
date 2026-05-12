@@ -5,3 +5,6 @@ __pycache__/
 Thumbs.db
 node_modules/
 .env
+
+# Données personnelles (hôtels réels, prix, etc.)
+data/lieux.json

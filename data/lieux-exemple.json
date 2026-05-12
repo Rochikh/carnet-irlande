@@ -1,37 +1,37 @@
 {
   "hotels": [
     {
-      "id": "barnoaks-house",
-      "nom": "Barnoaks House",
-      "description": "B&B chaleureux dans le sud de Dublin",
+      "id": "hotel-exemple-dublin-1",
+      "nom": "Hôtel exemple Dublin (arrivée)",
+      "description": "Hébergement à personnaliser — remplacez par votre réservation",
       "categorie": "hotel",
-      "lat": 53.2950,
-      "lng": -6.2480,
+      "lat": 53.3498,
+      "lng": -6.2603,
       "coord_verifiee": false,
       "check_in": "2026-08-08",
       "check_out": "2026-08-09",
       "duree": null,
       "statut": "a_voir",
-      "prix": 120.00
+      "prix": 0
     },
     {
-      "id": "salthill-hotel",
-      "nom": "Salthill Hotel",
-      "description": "Hôtel en bord de mer à Salthill, Galway",
+      "id": "hotel-exemple-galway",
+      "nom": "Hôtel exemple Galway",
+      "description": "Hébergement à personnaliser — remplacez par votre réservation",
       "categorie": "hotel",
-      "lat": 53.2583,
-      "lng": -9.0711,
-      "coord_verifiee": true,
+      "lat": 53.2707,
+      "lng": -9.0568,
+      "coord_verifiee": false,
       "check_in": "2026-08-09",
       "check_out": "2026-08-11",
       "duree": null,
       "statut": "a_voir",
-      "prix": 379.91
+      "prix": 0
     },
     {
-      "id": "larchlodge",
-      "nom": "Larchlodge",
-      "description": "Hébergement à Ennis, comté de Clare",
+      "id": "hotel-exemple-ennis",
+      "nom": "Hôtel exemple Ennis",
+      "description": "Hébergement à personnaliser — remplacez par votre réservation",
       "categorie": "hotel",
       "lat": 52.8463,
       "lng": -8.9862,
@@ -40,12 +40,12 @@
       "check_out": "2026-08-13",
       "duree": null,
       "statut": "a_voir",
-      "prix": 284.80
+      "prix": 0
     },
     {
-      "id": "baileys-hotel-cashel",
-      "nom": "Baileys Hotel Cashel",
-      "description": "Hôtel au centre de Cashel (non remboursable)",
+      "id": "hotel-exemple-cashel",
+      "nom": "Hôtel exemple Cashel",
+      "description": "Hébergement à personnaliser — remplacez par votre réservation",
       "categorie": "hotel",
       "lat": 52.5159,
       "lng": -7.8885,
@@ -54,21 +54,21 @@
       "check_out": "2026-08-14",
       "duree": null,
       "statut": "a_voir",
-      "prix": 161.50
+      "prix": 0
     },
     {
-      "id": "morehampton-townhouse",
-      "nom": "Morehampton Townhouse",
-      "description": "Guesthouse sur Morehampton Road, Donnybrook, Dublin",
+      "id": "hotel-exemple-dublin-2",
+      "nom": "Hôtel exemple Dublin (retour)",
+      "description": "Hébergement à personnaliser — remplacez par votre réservation",
       "categorie": "hotel",
-      "lat": 53.3270,
-      "lng": -6.2390,
-      "coord_verifiee": true,
+      "lat": 53.3498,
+      "lng": -6.2603,
+      "coord_verifiee": false,
       "check_in": "2026-08-14",
       "check_out": "2026-08-15",
       "duree": null,
       "statut": "a_voir",
-      "prix": 158.10
+      "prix": 0
     }
   ],
   "lieux": [
