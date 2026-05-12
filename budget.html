@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#1a6b3c">
+  <title>Budget - Carnet Irlande 2026</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="header">
+    <h1>Budget</h1>
+  </header>
+
+  <div class="main">
+    <!-- Total -->
+    <div class="budget-total">
+      <div class="label">Total dépenses</div>
+      <div class="montant" id="total-montant">0,00 €</div>
+    </div>
+
+    <!-- Budget global -->
+    <div class="card">
+      <div class="flex-between">
+        <label style="font-weight:600;font-size:0.9rem">Budget global</label>
+        <input type="number" id="budget-global" placeholder="ex : 2500" style="width:120px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size:0.95rem;text-align:right">
+      </div>
+    </div>
+
+    <div id="budget-reste" class="budget-reste" style="display:none"></div>
+
+    <!-- Résumé par catégorie -->
+    <div class="card" id="resume-categories"></div>
+
+    <!-- Ajout dépense -->
+    <button class="btn btn-primary btn-block mt-16" id="btn-add-depense">+ Ajouter une dépense</button>
+
+    <!-- Liste dépenses -->
+    <div id="depenses-list" class="mt-16"></div>
+  </div>
+
+  <!-- Modal ajout dépense -->
+  <div class="modal-overlay hidden" id="modal-depense">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Ajouter une dépense</h2>
+        <button class="modal-close" id="modal-close-dep">&times;</button>
+      </div>
+      <form id="form-depense">
+        <div class="form-group">
+          <label for="dep-label">Libellé</label>
+          <input type="text" id="dep-label" required>
+        </div>
+        <div class="form-group">
+          <label for="dep-montant">Montant (€)</label>
+          <input type="number" id="dep-montant" step="0.01" required>
+        </div>
+        <div class="form-group">
+          <label for="dep-cat">Catégorie</label>
+          <select id="dep-cat">
+            <option value="hebergement">Hébergement</option>
+            <option value="location_voiture">Location voiture</option>
+            <option value="essence">Essence</option>
+            <option value="restauration">Restauration</option>
+            <option value="visites">Visites</option>
+            <option value="divers">Divers</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="dep-date">Date</label>
+          <input type="date" id="dep-date" value="2026-08-08">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Ajouter</button>
+      </form>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="index.html" class="nav-item">
+      <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <span>Carte</span>
+    </a>
+    <a href="itineraire.html" class="nav-item">
+      <svg viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+      <span>Itin.</span>
+    </a>
+    <a href="lieux.html" class="nav-item">
+      <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      <span>Lieux</span>
+    </a>
+    <a href="journal.html" class="nav-item">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span>Journal</span>
+    </a>
+    <a href="budget.html" class="nav-item active">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <span>Budget</span>
+    </a>
+  </nav>
+
+  <script src="js/storage.js"></script>
+  <script>
+    const CAT_LABELS = {
+      hebergement: 'Hébergement',
+      location_voiture: 'Location voiture',
+      essence: 'Essence',
+      restauration: 'Restauration',
+      visites: 'Visites',
+      divers: 'Divers'
+    };
+
+    const modal = document.getElementById('modal-depense');
+    const form = document.getElementById('form-depense');
+    const budgetInput = document.getElementById('budget-global');
+
+    function formatMontant(n) {
+      return n.toFixed(2).replace('.', ',') + ' €';
+    }
+
+    function render() {
+      const depenses = Storage.getDepenses();
+      const total = depenses.reduce((s, d) => s + d.montant, 0);
+
+      document.getElementById('total-montant').textContent = formatMontant(total);
+
+      // Budget restant
+      const budgetGlobal = Storage.getBudgetGlobal();
+      const resteEl = document.getElementById('budget-reste');
+      if (budgetGlobal !== null && budgetGlobal > 0) {
+        const reste = budgetGlobal - total;
+        resteEl.style.display = 'block';
+        resteEl.textContent = `Reste : ${formatMontant(reste)} sur ${formatMontant(budgetGlobal)}`;
+        resteEl.classList.toggle('negatif', reste < 0);
+      } else {
+        resteEl.style.display = 'none';
+      }
+
+      // Résumé par catégorie
+      const parCat = {};
+      depenses.forEach(d => {
+        parCat[d.categorie] = (parCat[d.categorie] || 0) + d.montant;
+      });
+      const resumeEl = document.getElementById('resume-categories');
+      resumeEl.innerHTML = '<div style="font-weight:600;margin-bottom:8px;font-size:0.9rem">Par catégorie</div>' +
+        Object.entries(parCat).map(([cat, montant]) =>
+          `<div class="depense-item">
+            <span>${CAT_LABELS[cat] || cat}</span>
+            <span class="depense-montant">${formatMontant(montant)}</span>
+          </div>`
+        ).join('');
+
+      // Liste dépenses
+      const listEl = document.getElementById('depenses-list');
+      listEl.innerHTML = depenses.map(d => {
+        const dateStr = new Date(d.date + 'T00:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+        const deleteBtn = d.confirme ? '' : `<button class="btn btn-danger btn-sm" onclick="deleteDepense('${d.id}')">×</button>`;
+        return `
+          <div class="card">
+            <div class="flex-between">
+              <div>
+                <div class="card-title">${d.label}</div>
+                <div class="depense-cat">${CAT_LABELS[d.categorie] || d.categorie} | ${dateStr}${d.confirme ? ' | Confirmé' : ''}</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <span class="depense-montant">${formatMontant(d.montant)}</span>
+                ${deleteBtn}
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    window.deleteDepense = function(id) {
+      if (confirm('Supprimer cette dépense ?')) {
+        Storage.deleteDepense(id);
+        render();
+      }
+    };
+
+    // Modal
+    document.getElementById('btn-add-depense').addEventListener('click', () => {
+      modal.classList.remove('hidden');
+    });
+
+    document.getElementById('modal-close-dep').addEventListener('click', () => {
+      modal.classList.add('hidden');
+      form.reset();
+    });
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.add('hidden');
+        form.reset();
+      }
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const depense = {
+        id: 'dep-' + Date.now(),
+        label: document.getElementById('dep-label').value.trim(),
+        montant: parseFloat(document.getElementById('dep-montant').value),
+        categorie: document.getElementById('dep-cat').value,
+        date: document.getElementById('dep-date').value,
+        confirme: false
+      };
+      Storage.addDepense(depense);
+      modal.classList.add('hidden');
+      form.reset();
+      render();
+    });
+
+    // Budget global
+    budgetInput.addEventListener('input', () => {
+      const val = parseFloat(budgetInput.value);
+      Storage.setBudgetGlobal(val > 0 ? val : null);
+      render();
+    });
+
+    (async () => {
+      await Storage.init();
+      const bg = Storage.getBudgetGlobal();
+      if (bg) budgetInput.value = bg;
+      render();
+    })();
+  </script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>
