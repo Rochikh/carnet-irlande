@@ -28,12 +28,16 @@ const Storage = {
     }
   },
 
-  // Initialise les données depuis lieux.json si premier lancement
+  // Initialise les données depuis le JSON de données si premier lancement
+  // Cherche d'abord lieux.json (données personnelles), sinon lieux-exemple.json
   async init() {
     if (this.get(this.KEYS.INITIALIZED)) return;
 
     try {
-      const resp = await fetch('data/lieux.json');
+      let resp = await fetch('data/lieux.json');
+      if (!resp.ok) {
+        resp = await fetch('data/lieux-exemple.json');
+      }
       const data = await resp.json();
       this.set(this.KEYS.HOTELS, data.hotels);
       this.set(this.KEYS.LIEUX, data.lieux);

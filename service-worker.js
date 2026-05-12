@@ -1,4 +1,4 @@
-const CACHE_NAME = 'carnet-irlande-v1';
+const CACHE_NAME = 'carnet-irlande-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -11,7 +11,7 @@ const ASSETS = [
   './js/lieux.js',
   './js/storage.js',
   './js/pwa.js',
-  './data/lieux.json',
+  './data/lieux-exemple.json',
   './manifest.json'
 ];
 
