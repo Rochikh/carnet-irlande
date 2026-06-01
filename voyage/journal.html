@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#1a6b3c">
+  <title>Journal - Carnet Irlande 2026</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="header">
+    <h1>Journal de voyage</h1>
+  </header>
+
+  <div class="main">
+    <p class="card-sub" style="margin-bottom:12px">Notes saisies dans le Google Sheets (lecture seule).</p>
+    <div id="journal-list"></div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="index.html" class="nav-item">
+      <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <span>Carte</span>
+    </a>
+    <a href="itineraire.html" class="nav-item">
+      <svg viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+      <span>Itin.</span>
+    </a>
+    <a href="lieux.html" class="nav-item">
+      <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      <span>Lieux</span>
+    </a>
+    <a href="journal.html" class="nav-item active">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span>Journal</span>
+    </a>
+    <a href="budget.html" class="nav-item">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <span>Budget</span>
+    </a>
+  </nav>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="js/csv-loader.js"></script>
+  <script>
+    function formatJournalDate(iso) {
+      const d = new Date(iso + 'T00:00:00');
+      if (isNaN(d)) return iso;
+      return d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+    }
+
+    async function renderJournal() {
+      const data = await Data.load();
+      if (data.errors.length) showDataError(data.errors);
+      const entries = data.journal;
+      const container = document.getElementById('journal-list');
+
+      if (!entries.length) {
+        container.innerHTML = '<p class="text-center card-sub" style="padding:24px 0">Aucune entrée de journal.</p>';
+        return;
+      }
+
+      container.innerHTML = entries.map(e => {
+        const titre = formatJournalDate(e.dateISO);
+        const lieu = e.lieu ? `<div class="card-sub" style="margin-top:2px">📍 ${e.lieu}</div>` : '';
+        const note = e.note
+          ? `<div class="card-sub" style="margin-top:6px;white-space:pre-wrap;color:#333">${e.note}</div>`
+          : `<div class="card-sub" style="margin-top:6px;font-style:italic;opacity:.7">Pas encore de note.</div>`;
+        const photo = e.photo_url
+          ? `<img src="${e.photo_url}" alt="" style="margin-top:8px;width:100%;border-radius:8px;display:block" loading="lazy">`
+          : '';
+        return `
+          <div class="card">
+            <div class="card-title" style="text-transform:capitalize">${titre}</div>
+            ${lieu}
+            ${note}
+            ${photo}
+          </div>`;
+      }).join('');
+    }
+
+    renderJournal();
+  </script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>
