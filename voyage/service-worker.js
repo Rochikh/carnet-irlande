@@ -1,6 +1,6 @@
 // service-worker.js — Cache du shell statique uniquement (version /voyage/)
 // Les CSV Google Sheets ne sont JAMAIS mis en cache : données toujours en direct.
-const CACHE = 'carnet-irlande-voyage-v1';
+const CACHE = 'carnet-irlande-voyage-v2';
 const SHELL = [
   './',
   './index.html',
@@ -8,10 +8,12 @@ const SHELL = [
   './lieux.html',
   './journal.html',
   './budget.html',
+  './assistant.html',
   './css/style.css',
   './js/csv-loader.js',
   './js/app.js',
   './js/lieux.js',
+  './js/assistant.js',
   './js/pwa.js',
   './manifest.json'
 ];
@@ -30,6 +32,10 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   const url = e.request.url;
+  // Assistant IA : toujours le réseau, jamais de cache (réponses uniques, requêtes POST)
+  if (url.includes('ia-irlande.rochane.fr')) {
+    return; // laisse le navigateur gérer (réseau)
+  }
   // Données dynamiques (Google Sheets, tuiles, CDN) : réseau direct, jamais de cache
   if (url.includes('docs.google.com') ||
       url.includes('tile.openstreetmap.org') ||

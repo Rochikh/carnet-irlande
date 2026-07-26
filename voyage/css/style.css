@@ -90,9 +90,18 @@ body {
   font-size: 0.65rem;
   font-weight: 500;
   gap: 2px;
-  padding: 4px 0;
-  min-width: 56px;
+  padding: 4px 2px;
+  /* 6 onglets se partagent la largeur à parts égales, y compris sur petit écran */
+  flex: 1 1 0;
+  min-width: 0;
   transition: color 0.15s;
+}
+
+.nav-item span {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .nav-item svg {
