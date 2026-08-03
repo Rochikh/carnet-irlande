@@ -68,6 +68,7 @@ function buildPopup(point) {
       <p style="font-size:0.85rem;color:#666;margin:0">${point.description}</p>
       <p style="font-size:0.8rem;margin:4px 0 0;color:#444">${dateInfo}${dureeInfo}${prixInfo}</p>
       ${coordWarning}
+      ${boutonLien(point.lien)}
     </div>
   `;
 }

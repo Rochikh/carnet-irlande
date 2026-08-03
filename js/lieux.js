@@ -63,6 +63,7 @@ function renderLieux() {
         <div class="card-title" style="margin-top:6px">${p.nom}</div>
         <div class="card-sub">${p.description}</div>
         <div class="card-sub" style="margin-top:4px">${dateStr}${duree}${prix ? ' | ' + prix : ''}</div>
+        ${boutonLien(p.lien)}
       </div>
     `;
   }).join('');

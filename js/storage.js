@@ -133,3 +133,26 @@ const Storage = {
     this.set(this.KEYS.BUDGET_GLOBAL, montant);
   }
 };
+
+// N'accepte qu'une URL http(s). Le champ « lien » peut venir d'un fichier de
+// données édité à la main : une valeur « javascript:… » placée dans un href
+// serait exécutable au clic. Tout autre schéma est traité comme un lien absent.
+function lienSur(url) {
+  const s = String(url ?? '').trim();
+  return /^https?:\/\//i.test(s) ? s : '';
+}
+
+function escapeAttr(s) {
+  return String(s).replace(/[&<>"']/g, c =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])
+  );
+}
+
+// Rendu du lien « En savoir plus », vide si l'URL est absente ou refusée.
+// stopPropagation : sur l'onglet Lieux la fiche entière ouvre la modale
+// d'édition, le lien ne doit pas la déclencher en plus.
+function boutonLien(url) {
+  const sur = lienSur(url);
+  if (!sur) return '';
+  return `<a class="lien-info" href="${escapeAttr(sur)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">En savoir plus ↗</a>`;
+}
