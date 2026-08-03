@@ -124,6 +124,10 @@ const Data = {
         nom: (this.field(r, 'nom') || '').trim(),
         description: (this.field(r, 'description') || '').trim(),
         categorie: (this.field(r, 'categorie') || 'monument').trim().toLowerCase(),
+        // Type précis affiché sur le badge de l'itinéraire (« Abbaye », « Château »…).
+        // Colonne facultative : vide, le badge retombe sur le libellé de la catégorie.
+        // La casse est conservée, c'est du texte d'affichage, pas une clé.
+        type: (this.field(r, 'type') || '').trim(),
         lat: this.parseNum(this.field(r, 'lat')),
         lng: this.parseNum(this.field(r, 'lng')),
         jour: (this.field(r, 'jour') || '').trim(),

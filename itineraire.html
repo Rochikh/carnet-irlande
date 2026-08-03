@@ -77,7 +77,7 @@
           items += `
             <div class="card">
               <div class="flex-between">
-                <span class="card-badge badge-${l.categorie}">${CATEGORY_LABELS[l.categorie]}</span>
+                <span class="card-badge badge-${l.categorie}">${l.type || CATEGORY_LABELS[l.categorie] || l.categorie}</span>
                 <span class="badge-statut statut-${l.statut}">${l.statut === 'a_voir' ? 'À voir' : l.statut === 'visite' ? 'Visité' : 'Annulé'}</span>
               </div>
               <div class="card-title" style="margin-top:4px">${l.nom}</div>
