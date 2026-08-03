@@ -56,6 +56,27 @@ function buildPopup(p) {
   `;
 }
 
+// Les nuits d'un hébergement sont dans la colonne Notes du budget, sous la forme
+// « 8 août » ou « 11-12 août ». Même expression que findHotelForDay() dans
+// itineraire.html : une note « 11-12 août » couvre la nuit du 11 ET celle du 12.
+function nuitsDepuisNotes(notes) {
+  const m = String(notes || '').match(/(\d{1,2})(?:\s*-\s*(\d{1,2}))?\s*ao[uû]t/i);
+  if (!m) return '';
+  return m[2] ? `Nuits du ${m[1]} et du ${m[2]} août` : `Nuit du ${m[1]} août`;
+}
+
+function buildHotelPopup(h) {
+  const nuits = nuitsDepuisNotes(h.notes);
+  const montant = h.montant ? `<br><strong>${formatMontantFR(h.montant)}</strong>` : '';
+  return `
+    <div style="min-width:180px">
+      <span class="card-badge badge-hotel">Nuit</span>
+      <h3 style="margin:6px 0 2px;font-size:1rem">${h.libelle}</h3>
+      <p style="font-size:0.8rem;margin:4px 0 0;color:#444">${nuits}${montant}</p>
+    </div>
+  `;
+}
+
 async function initMap() {
   const map = L.map('map', { zoomControl: false }).setView([53.5, -7.5], 7);
   L.control.zoom({ position: 'topright' }).addTo(map);
@@ -74,6 +95,15 @@ async function initMap() {
       marker.bindPopup(buildPopup(p));
       markers.push(marker);
     }
+  });
+
+  // Les hébergements viennent du budget, seule source qui les décrive.
+  data.budget.forEach(d => {
+    if (d.categorie !== 'hebergement' || d.isTotal) return;
+    if (d.lat == null || d.lng == null) return;
+    const marker = L.marker([d.lat, d.lng], { icon: createMarkerIcon('hotel') }).addTo(map);
+    marker.bindPopup(buildHotelPopup(d));
+    markers.push(marker);
   });
 
   if (markers.length > 0) {
