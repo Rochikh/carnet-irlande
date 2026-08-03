@@ -60,14 +60,17 @@ const Data = {
     return s; // suppose déjà ISO
   },
 
-  // Identifie le type d'un tableau de lignes parsées via ses en-têtes
+  // Identifie le type d'un tableau de lignes parsées via ses en-têtes.
+  // « montant » est testé en premier : depuis que les hébergements portent des
+  // coordonnées, le budget a lui aussi des colonnes lat/lng, et un test lat+lng
+  // placé en tête le ferait passer pour un fichier de lieux.
   classify(rows) {
     if (!rows || !rows.length) return 'inconnu';
     const headers = Object.keys(rows[0]).map(h => h.toLowerCase().trim());
     const has = (h) => headers.includes(h);
-    if (has('lat') && has('lng')) return 'lieux';
     if (has('montant')) return 'budget';
     if (has('photo_url') || (has('date') && has('note'))) return 'journal';
+    if (has('lat') && has('lng')) return 'lieux';
     return 'inconnu';
   },
 
