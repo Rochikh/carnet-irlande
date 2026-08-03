@@ -462,3 +462,17 @@ body {
     border-radius: 16px 16px 0 0;
   }
 }
+
+/* Lien « En savoir plus » des fiches et des bulles de carte */
+.lien-info {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1a6b3c;
+  text-decoration: none;
+}
+.lien-info:hover,
+.lien-info:focus {
+  text-decoration: underline;
+}

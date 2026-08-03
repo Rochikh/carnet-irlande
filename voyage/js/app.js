@@ -51,6 +51,7 @@ function buildPopup(p) {
       <h3 style="margin:6px 0 2px;font-size:1rem">${p.nom}</h3>
       <p style="font-size:0.85rem;color:#666;margin:0">${p.description}</p>
       <p style="font-size:0.8rem;margin:4px 0 0;color:#444">${formatDate(p.jour)}${dureeInfo}${prixInfo}</p>
+      ${boutonLien(p.lien)}
     </div>
   `;
 }
