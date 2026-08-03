@@ -128,6 +128,8 @@ const Data = {
         // Colonne facultative : vide, le badge retombe sur le libellé de la catégorie.
         // La casse est conservée, c'est du texte d'affichage, pas une clé.
         type: (this.field(r, 'type') || '').trim(),
+        // Lien d'information, filtré ici : ce qui sort du chargeur est déjà sûr.
+        lien: lienSur(this.field(r, 'lien')),
         lat: this.parseNum(this.field(r, 'lat')),
         lng: this.parseNum(this.field(r, 'lng')),
         jour: (this.field(r, 'jour') || '').trim(),
@@ -148,6 +150,9 @@ const Data = {
           montant: this.parseMontant(this.field(r, 'montant')),
           statut: (this.field(r, 'statut') || '').trim().toLowerCase(),
           notes: (this.field(r, 'notes') || '').trim(),
+          // Position de l'hébergement, pour la carte. Vide sur les autres lignes.
+          lat: this.parseNum(this.field(r, 'lat')),
+          lng: this.parseNum(this.field(r, 'lng')),
           // Ligne de total saisie manuellement dans le Sheet : on l'exclut des calculs
           isTotal: libelle.toUpperCase() === 'TOTAL'
         };
@@ -181,6 +186,28 @@ const Data = {
 // Helpers d'affichage partagés
 function formatMontantFR(n) {
   return n.toFixed(2).replace('.', ',') + ' €';
+}
+
+// N'accepte qu'une URL http(s). Le lien vient d'un CSV modifiable à deux mains
+// et finit dans un attribut href : une valeur « javascript:… » y serait
+// exécutable au clic. Tout autre schéma est traité comme un lien absent.
+function lienSur(url) {
+  const s = String(url ?? '').trim();
+  return /^https?:\/\//i.test(s) ? s : '';
+}
+
+// Rendu du lien « En savoir plus », vide si l'URL est absente ou refusée.
+function boutonLien(url) {
+  const sur = lienSur(url);
+  if (!sur) return '';
+  return `<a class="lien-info" href="${escapeAttr(sur)}" target="_blank" rel="noopener noreferrer">En savoir plus ↗</a>`;
+}
+
+// Échappement pour insertion dans un attribut HTML entre guillemets.
+function escapeAttr(s) {
+  return String(s).replace(/[&<>"']/g, c =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])
+  );
 }
 
 function showDataError(messages) {
