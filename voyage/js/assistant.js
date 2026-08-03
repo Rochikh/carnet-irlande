@@ -18,6 +18,47 @@ const form = document.getElementById('composer');
 const input = document.getElementById('input');
 const btnSend = document.getElementById('btn-send');
 const btnClear = document.getElementById('btn-clear');
+const btnGeo = document.getElementById('btn-geo');
+
+// Position transmise à l'assistant. Éteint par défaut : la permission n'est
+// demandée qu'au premier appui, jamais à l'ouverture de l'onglet.
+let geoActif = false;
+
+const GEO_OPTIONS = { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 };
+
+function positionActuelle() {
+  return new Promise(resolve => {
+    if (!navigator.geolocation) return resolve(null);
+    navigator.geolocation.getCurrentPosition(
+      p => resolve({ lat: p.coords.latitude, lng: p.coords.longitude }),
+      () => resolve(null),
+      GEO_OPTIONS
+    );
+  });
+}
+
+function setGeo(actif) {
+  geoActif = actif;
+  btnGeo.setAttribute('aria-pressed', actif ? 'true' : 'false');
+}
+
+btnGeo.addEventListener('click', async () => {
+  if (busy) return;
+  if (geoActif) { setGeo(false); return; }
+
+  btnGeo.disabled = true;
+  const p = await positionActuelle();
+  btnGeo.disabled = false;
+
+  if (p) {
+    setGeo(true);
+  } else {
+    setGeo(false);
+    addBubble('error',
+      "Position indisponible. Autorisez la localisation dans votre navigateur, " +
+      "ou continuez : les réponses partiront de votre hôtel.");
+  }
+});
 
 let conversation = loadConversation();
 let busy = false;
@@ -144,6 +185,18 @@ async function send(rawText) {
   btnClear.disabled = false;
   const typing = showTyping();
 
+  // Position rafraîchie à chaque envoi : sur une journée de route, une position
+  // figée du matin serait pire que pas de position du tout. Un échec ne bloque
+  // pas l'envoi, le serveur retombe sur l'hôtel de la nuit.
+  let position = null;
+  if (geoActif) {
+    position = await positionActuelle();
+    if (!position) {
+      setGeo(false);
+      addBubble('error', "Position introuvable, la réponse partira de votre hôtel.");
+    }
+  }
+
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
@@ -151,7 +204,7 @@ async function send(rawText) {
     const resp = await fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: text, history }),
+      body: JSON.stringify(position ? { message: text, history, position } : { message: text, history }),
       signal: controller.signal
     });
 

@@ -147,6 +147,20 @@
       border-color: var(--primary);
       background: var(--bg-card);
     }
+    .btn-geo {
+      flex: 0 0 auto;
+      background: none;
+      border: none;
+      padding: 8px;
+      color: #999;
+      cursor: pointer;
+      border-radius: 50%;
+    }
+    .btn-geo[aria-pressed="true"] {
+      color: #1a6b3c;
+      background: rgba(26, 107, 60, 0.12);
+    }
+    .btn-geo:disabled { opacity: 0.4; cursor: default; }
     .btn-send {
       flex: 0 0 auto;
       width: 46px;
@@ -180,6 +194,13 @@
   <form class="composer" id="composer">
     <textarea id="input" rows="1" placeholder="Posez votre question…"
               aria-label="Votre question" maxlength="2000" autocomplete="off"></textarea>
+    <button type="button" class="btn-geo" id="btn-geo"
+            aria-pressed="false" title="Répondre depuis ma position actuelle">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+        <circle cx="12" cy="12" r="8"/>
+      </svg>
+    </button>
     <button type="submit" class="btn-send" id="btn-send" aria-label="Envoyer">
       <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
     </button>
