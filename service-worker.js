@@ -1,4 +1,4 @@
-const CACHE_NAME = 'carnet-irlande-v2';
+const CACHE_NAME = 'carnet-irlande-v3';
 const ASSETS = [
   './',
   './index.html',
