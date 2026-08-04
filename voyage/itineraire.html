@@ -68,7 +68,7 @@
       const dayNum = parseInt(isoDate.slice(8, 10), 10);
       return budget.find(d => {
         if (d.categorie !== 'hebergement' || d.isTotal) return false;
-        const m = d.notes.match(/(\d{1,2})(?:\s*-\s*(\d{1,2}))?\s*ao[uû]t/i);
+        const m = d.notes.match(/(\d{1,2})\s*(?:(?:[-–—]|au)\s*(\d{1,2}))?\s*ao[uû]t/i);
         if (!m) return false;
         const start = parseInt(m[1], 10);
         const end = m[2] ? parseInt(m[2], 10) : start;

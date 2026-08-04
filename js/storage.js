@@ -7,7 +7,8 @@ const Storage = {
     JOURNAL: 'carnet_irlande_journal',
     BUDGET: 'carnet_irlande_budget',
     BUDGET_GLOBAL: 'carnet_irlande_budget_global',
-    INITIALIZED: 'carnet_irlande_initialized'
+    INITIALIZED: 'carnet_irlande_initialized',
+    LIENS_REPRIS: 'carnet_irlande_liens_repris'
   },
 
   get(key) {
@@ -31,7 +32,7 @@ const Storage = {
   // Initialise les données depuis le JSON de données si premier lancement
   // Cherche d'abord lieux.json (données personnelles), sinon lieux-exemple.json
   async init() {
-    if (this.get(this.KEYS.INITIALIZED)) return;
+    if (this.get(this.KEYS.INITIALIZED)) return this.reprendreLiens();
 
     try {
       let resp = await fetch('data/lieux.json');
@@ -54,8 +55,48 @@ const Storage = {
       this.set(this.KEYS.BUDGET, depenses);
       this.set(this.KEYS.BUDGET_GLOBAL, null);
       this.set(this.KEYS.INITIALIZED, true);
+      this.set(this.KEYS.LIENS_REPRIS, true); // données fraîches : rien à reprendre
     } catch (e) {
       console.error('Storage.init error:', e);
+    }
+  },
+
+  // Le fichier de données n'est lu qu'au tout premier lancement. Le champ « lien »
+  // est arrivé après coup : sans cette reprise, tout appareil ayant déjà ouvert le
+  // carnet garderait des lieux sans lien et le bouton « En savoir plus » n'y
+  // apparaîtrait jamais. Le passage du service worker en v4 n'y change rien : il
+  // vide le cache HTTP, pas le localStorage.
+  //
+  // On ne recopie qu'un lien absent, et rien d'autre : les fiches stockées portent
+  // les modifications de l'utilisateur, qui doivent survivre à cette reprise.
+  async reprendreLiens() {
+    if (this.get(this.KEYS.LIENS_REPRIS)) return;
+
+    try {
+      let resp = await fetch('data/lieux.json');
+      if (!resp.ok) resp = await fetch('data/lieux-exemple.json');
+      const source = await resp.json();
+
+      const completer = (cle, reference) => {
+        const stockes = this.get(cle);
+        if (!Array.isArray(stockes) || !Array.isArray(reference)) return;
+        const liens = new Map(reference.filter(x => x.lien).map(x => [x.id, x.lien]));
+        let modifie = false;
+        const liste = stockes.map(x => {
+          const lien = liens.get(x.id);
+          if (!lien || x.lien) return x;
+          modifie = true;
+          return { ...x, lien };
+        });
+        if (modifie) this.set(cle, liste);
+      };
+
+      completer(this.KEYS.LIEUX, source.lieux);
+      completer(this.KEYS.HOTELS, source.hotels);
+      this.set(this.KEYS.LIENS_REPRIS, true);
+    } catch (e) {
+      // Réseau indisponible : on ne pose pas le drapeau, la reprise sera retentée.
+      console.error('Storage.reprendreLiens error:', e);
     }
   },
 

@@ -59,8 +59,11 @@ function buildPopup(p) {
 // Les nuits d'un hébergement sont dans la colonne Notes du budget, sous la forme
 // « 8 août » ou « 11-12 août ». Même expression que findHotelForDay() dans
 // itineraire.html : une note « 11-12 août » couvre la nuit du 11 ET celle du 12.
+// Le séparateur accepte « au » et les tirets longs : la saisie mobile d'un Sheets
+// tenu à deux mains produit facilement « 11 – 12 août », qui sans cela serait lu
+// comme la seule nuit du 12.
 function nuitsDepuisNotes(notes) {
-  const m = String(notes || '').match(/(\d{1,2})(?:\s*-\s*(\d{1,2}))?\s*ao[uû]t/i);
+  const m = String(notes || '').match(/(\d{1,2})\s*(?:(?:[-–—]|au)\s*(\d{1,2}))?\s*ao[uû]t/i);
   if (!m) return '';
   return m[2] ? `Nuits du ${m[1]} et du ${m[2]} août` : `Nuit du ${m[1]} août`;
 }
