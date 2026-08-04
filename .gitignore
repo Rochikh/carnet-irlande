@@ -8,3 +8,8 @@ node_modules/
 
 # Données personnelles (hôtels réels, prix, etc.)
 data/lieux.json
+
+# Documents de conception et plans de travail : ils citent les hôtels réservés,
+# leurs coordonnées et les dates de séjour. Le dépôt est public. Ils restent sur
+# le disque, ils ne sont simplement plus versionnés.
+docs/superpowers/
