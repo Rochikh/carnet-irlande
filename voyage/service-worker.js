@@ -1,6 +1,6 @@
 // service-worker.js — Cache du shell statique uniquement (version /voyage/)
 // Les CSV Google Sheets ne sont JAMAIS mis en cache : données toujours en direct.
-const CACHE = 'carnet-irlande-voyage-v6';
+const CACHE = 'carnet-irlande-voyage-v7';
 const SHELL = [
   './',
   './index.html',
@@ -15,7 +15,10 @@ const SHELL = [
   './js/lieux.js',
   './js/assistant.js',
   './js/pwa.js',
-  './manifest.json'
+  './manifest.json',
+  '../icons/icon-192.png',
+  '../icons/icon-512.png',
+  '../icons/icon-maskable-512.png'
 ];
 
 self.addEventListener('install', e => {

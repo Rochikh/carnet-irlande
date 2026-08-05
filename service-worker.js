@@ -1,4 +1,4 @@
-const CACHE_NAME = 'carnet-irlande-v4';
+const CACHE_NAME = 'carnet-irlande-v5';
 const ASSETS = [
   './',
   './index.html',
@@ -12,7 +12,10 @@ const ASSETS = [
   './js/storage.js',
   './js/pwa.js',
   './data/lieux-exemple.json',
-  './manifest.json'
+  './manifest.json',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/icon-maskable-512.png'
 ];
 
 // Install: pre-cache app shell
