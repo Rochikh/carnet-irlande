@@ -153,7 +153,7 @@
       border-color: var(--primary);
       background: var(--bg-card);
     }
-    .btn-geo {
+    .btn-geo, .btn-mic {
       flex: 0 0 auto;
       background: none;
       border: none;
@@ -162,11 +162,22 @@
       cursor: pointer;
       border-radius: 50%;
     }
-    .btn-geo[aria-pressed="true"] {
+    .btn-geo[aria-pressed="true"], .btn-mic[aria-pressed="true"] {
       color: #1a6b3c;
       background: rgba(26, 107, 60, 0.12);
     }
-    .btn-geo:disabled { opacity: 0.4; cursor: default; }
+    .btn-geo:disabled, .btn-mic:disabled { opacity: 0.4; cursor: default; }
+
+    /* Pendant la dictée le micro respire : c'est le seul signe visible que le
+       navigateur écoute, et il doit être lisible sans lire le texte qui s'écrit. */
+    .btn-mic[aria-pressed="true"] { animation: souffle-mic 1.6s ease-in-out infinite; }
+    @keyframes souffle-mic {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .btn-mic[aria-pressed="true"] { animation: none; }
+    }
     .btn-send {
       flex: 0 0 auto;
       width: 46px;
@@ -200,6 +211,15 @@
   <form class="composer" id="composer">
     <textarea id="input" rows="1" placeholder="Posez votre question…"
               aria-label="Votre question" maxlength="2000" autocomplete="off"></textarea>
+    <button type="button" class="btn-mic" id="btn-mic"
+            aria-pressed="false" title="Dicter la question" aria-label="Dicter la question">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round">
+        <rect x="9" y="2" width="6" height="11" rx="3"/>
+        <path d="M5 11a7 7 0 0 0 14 0"/>
+        <line x1="12" y1="18" x2="12" y2="22"/>
+      </svg>
+    </button>
     <button type="button" class="btn-geo" id="btn-geo"
             aria-pressed="false" title="Répondre depuis ma position actuelle">
       <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">

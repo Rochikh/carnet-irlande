@@ -60,6 +60,76 @@ btnGeo.addEventListener('click', async () => {
   }
 });
 
+// ─── Dictée vocale ──────────────────────────────────────────────────────────
+// Reconnaissance intégrée au navigateur, aucun service tiers à installer. Sur
+// Chrome l'audio part chez Google le temps de la transcription et rien ne marche
+// hors connexion : c'est le fonctionnement de l'API, il n'existe pas de mode local.
+const btnMic = document.getElementById('btn-mic');
+const Reconnaissance = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+let reco = null;
+let ecoute = false;
+let texteAvantDictee = '';
+
+function setMic(actif) {
+  ecoute = actif;
+  btnMic?.setAttribute('aria-pressed', actif ? 'true' : 'false');
+}
+
+function creerReco() {
+  const r = new Reconnaissance();
+  r.lang = 'fr-FR';
+  r.interimResults = true; // le texte s'écrit pendant qu'on parle
+  r.continuous = false;    // s'arrête de lui-même au silence
+  r.maxAlternatives = 1;
+
+  // results contient toute la session : on reconstruit la phrase entière à chaque
+  // fois plutôt que d'accumuler, sinon les corrections du moteur se dupliqueraient.
+  r.onresult = (e) => {
+    let dicte = '';
+    for (let i = 0; i < e.results.length; i++) dicte += e.results[i][0].transcript;
+    input.value = texteAvantDictee + dicte.replace(/^\s+/, '');
+    autoGrow();
+  };
+
+  r.onerror = (e) => {
+    setMic(false);
+    if (e.error === 'aborted' || e.error === 'no-speech') return; // arrêt normal
+    addBubble('error', e.error === 'not-allowed'
+      ? "Micro refusé. Autorisez-le dans les réglages du navigateur pour dicter."
+      : "La dictée n’a pas fonctionné. Vérifiez votre connexion, ou tapez votre question.");
+  };
+
+  // Pas de focus sur le champ ici : sur mobile cela ferait surgir le clavier
+  // par-dessus la phrase qu'on vient de dicter, juste au moment de la relire.
+  r.onend = () => setMic(false);
+
+  return r;
+}
+
+// btnMic peut manquer si un cache sert un HTML plus ancien que ce script : la
+// dictée disparaît alors, mais le reste de l'assistant doit continuer à marcher.
+if (!btnMic) {
+  // rien à câbler
+} else if (!Reconnaissance) {
+  btnMic.remove(); // plutôt aucun bouton qu'un bouton mort
+} else {
+  btnMic.addEventListener('click', () => {
+    if (busy) return;
+    if (ecoute) { reco.stop(); return; }
+
+    reco = reco || creerReco();
+    // La dictée s'ajoute à ce qui est déjà écrit, elle ne l'efface pas.
+    texteAvantDictee = input.value.trim() ? input.value.replace(/\s*$/, '') + ' ' : '';
+    try {
+      reco.start();
+      setMic(true);
+    } catch (e) {
+      setMic(false); // start() sur une session déjà en cours
+    }
+  });
+}
+
 let conversation = loadConversation();
 let busy = false;
 
@@ -165,6 +235,9 @@ function setBusy(state) {
   busy = state;
   btnSend.disabled = state;
   input.disabled = state;
+  if (btnMic) btnMic.disabled = state;
+  // Une dictée en cours n'aurait plus de champ où écrire pendant l'envoi.
+  if (state && ecoute) reco?.stop();
 }
 
 async function send(rawText) {
