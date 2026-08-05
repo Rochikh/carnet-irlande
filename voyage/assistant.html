@@ -9,10 +9,16 @@
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="css/style.css">
   <style>
-    /* La page occupe exactement la hauteur libre : le fil défile, la barre de saisie reste au pouce. */
+    /* La page occupe exactement la hauteur libre : le fil défile, la barre de saisie reste au pouce.
+       style.css impose « min-height: 100vh » à body. Sur mobile, 100vh compte la barre d'adresse du
+       navigateur alors que 100dvh ne compte que la hauteur réellement visible : le min-height, plus
+       grand, l'emportait sur la hauteur et poussait la barre de saisie sous le bord de l'écran, que
+       « overflow: hidden » interdisait d'atteindre. Il faut donc neutraliser aussi le min-height. */
     body {
       padding-bottom: 0;
+      height: 100vh;        /* repli pour les navigateurs sans unité dvh */
       height: 100dvh;
+      min-height: 0;
       display: flex;
       flex-direction: column;
       overflow: hidden;

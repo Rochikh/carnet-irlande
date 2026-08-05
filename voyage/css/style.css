@@ -272,7 +272,11 @@ body {
 /* === MAP === */
 #map {
   width: 100%;
+  /* dvh et non vh : sur mobile, vh compte la barre d'adresse du navigateur et la
+     carte déborderait sous la barre de navigation. La première ligne sert de repli
+     aux navigateurs qui ne connaissent pas dvh. */
   height: calc(100vh - var(--header-height) - var(--nav-height));
+  height: calc(100dvh - var(--header-height) - var(--nav-height));
   z-index: 1;
 }
 
