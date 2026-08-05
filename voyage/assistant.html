@@ -133,7 +133,28 @@
       padding: 10px 12px;
       background: var(--nav-bg);
       border-top: 1px solid var(--border);
-      margin-bottom: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px));
+    }
+
+    /* Sur cette page seulement, la barre de navigation revient dans le flux.
+       Ailleurs elle est en « position: fixed » et flotte au-dessus d'une page qui
+       défile — ce qui est juste. Ici le corps est une colonne d'exactement une
+       hauteur d'écran : en la laissant hors du flux, il fallait lui réserver sa
+       place par une marge calculée sous la barre de saisie, et tout reposait sur
+       la valeur d'env(safe-area-inset-bottom). Quand cette valeur ne correspond
+       pas à la hauteur réellement occupée — le cas en application installée, où
+       la page s'étend sous la barre système — la saisie passait DERRIÈRE la
+       navigation, qui a un z-index de 1000. Invisible, et impossible à atteindre
+       puisque la page ne défile pas.
+
+       Dans le flux, les quatre bandes se partagent la hauteur : aucun
+       recouvrement n'est plus possible, quelle que soit la barre système. */
+    .bottom-nav {
+      position: static;
+      flex: 0 0 auto;
+      height: auto;
+      min-height: var(--nav-height);
+      transform: none;  /* la règle ≥768px la décalait de moitié, inutile hors du fixe */
+      margin: 0 auto;   /* et la recentre quand cette même règle lui donne une largeur max */
     }
     .composer textarea {
       flex: 1 1 auto;

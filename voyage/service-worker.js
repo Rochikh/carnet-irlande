@@ -1,6 +1,6 @@
 // service-worker.js — Cache du shell statique uniquement (version /voyage/)
 // Les CSV Google Sheets ne sont JAMAIS mis en cache : données toujours en direct.
-const CACHE = 'carnet-irlande-voyage-v7';
+const CACHE = 'carnet-irlande-voyage-v8';
 const SHELL = [
   './',
   './index.html',
